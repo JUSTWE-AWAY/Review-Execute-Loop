@@ -1,0 +1,5 @@
+# Active Profile
+
+Copy exactly one profile from the toolkit `profiles/` directory to `.workflow/PROFILE.md`. Use `generic.md` when no specialized profile is needed.
+
+The profile adds task-specific checks. It does not change role separation, user approval, transport, or file safety.
