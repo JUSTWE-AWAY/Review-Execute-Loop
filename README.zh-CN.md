@@ -50,12 +50,29 @@
 
 ## 五分钟开始
 
+先获取工具包：
+
+```bash
+git clone https://github.com/JUSTWE-AWAY/Review-Execute-Loop.git
+cd Review-Execute-Loop
+```
+
+也可以在 GitHub 页面选择 **Code > Download ZIP**，解压后在该目录打开终端。
+
 ### 方法 A：初始化脚本
 
 只需要 Python 3.9 及以上版本，不需要第三方库。
 
+Windows：
+
+```powershell
+py -3 tools/init.py E:/path/to/project --profile research --mode direct
+```
+
+macOS 或 Linux：
+
 ```bash
-python tools/init.py E:/path/to/project --profile research --mode direct
+python3 tools/init.py /path/to/project --profile research --mode direct
 ```
 
 可选 Profile：`generic`、`research`、`software`、`writing`。可选模式：`direct`、`manual`。
@@ -68,15 +85,15 @@ python tools/init.py E:/path/to/project --profile research --mode direct
 2. 把 `templates/` 复制为 `.workflow/templates/`。
 3. 从 `profiles/` 选择一个文件，复制为 `.workflow/PROFILE.md`。
 4. 使用 Codex 时，把 `starter/AGENTS.md.example` 的相关内容合并到项目根目录 `AGENTS.md`，不要覆盖已有项目规则。
-5. 填写 `PROJECT_BRIEF.md` 和 `WORKFLOW_STATE.md`。
-6. 把 `.workflow/templates/EXECUTOR_START.md` 交给执行窗口。
-7. 把 `.workflow/templates/REVIEWER_START.md` 交给审阅窗口。
+5. 把 `.workflow/templates/PROJECT_SETUP_START.md` 交给第一个项目窗口。
+6. 初始化获得批准后，把 `.workflow/templates/EXECUTOR_START.md` 交给该窗口。
+7. 把 `.workflow/templates/REVIEWER_START.md` 交给独立审阅窗口。
 
 Direct 模式在常规派发前需要两个不同且真实的任务 ID。Manual 模式可以把任务 ID 保持为 `NOT_APPLICABLE`。
 
 ## 第一个完整循环
 
-1. 在第一个窗口讨论目标，先不执行任务。
+1. 把 `.workflow/templates/PROJECT_SETUP_START.md` 交给第一个窗口并讨论目标，先不执行项目任务。
 2. 和用户确认 `PROJECT_BRIEF.md`。
 3. 第一个窗口成为执行窗口，只完成初始化。
 4. 新建一个独立审阅窗口，或者在 Manual 模式使用 Web 审阅。
@@ -130,10 +147,6 @@ python tools/validate.py --project E:/path/to/project
 ```
 
 校验程序只读，不修改项目。
-
-## v0.1 有意不包含的功能
-
-首版不包含服务器调度、论文投稿、复杂 Evidence 数据库、多执行窗口并行、自动 Pro 升级以及领域专用审批体系。真实项目需要这些能力时，应作为独立扩展加入，不改变双窗口核心。
 
 ## 许可
 

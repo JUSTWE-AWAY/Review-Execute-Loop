@@ -58,7 +58,7 @@ Transport changes only message delivery. Role separation, IDs, approval, result 
 
 Before routine work:
 
-1. Discuss and confirm `PROJECT_BRIEF.md`.
+1. Use `templates/PROJECT_SETUP_START.md` to discuss and confirm `PROJECT_BRIEF.md` without performing substantive project work.
 2. Select one minimal `PROFILE.md`.
 3. Set `MODE`, role bindings, and current phase in `WORKFLOW_STATE.md`.
 4. Give the Reviewer and Executor their distinct start prompts.
@@ -75,6 +75,16 @@ The initial discussion window may become the Executor after setup. It must not b
 5. If no prompt is issued, a local Reviewer may append `REVIEW_CLOSED`; in Manual mode the user may simply retain the review response as the closure record.
 
 Do not create an execution task only to update bookkeeping. Incorporate review decisions into the next substantive task.
+
+## State Ownership
+
+Keep `WORKFLOW_STATE.md` current without turning it into another history file:
+
+- During setup, the initial window records the approved brief, selected mode/profile, its Executor binding when known, and the setup phase.
+- In Direct mode, the local Reviewer sets `CURRENT_STEP_ID`, `ACTIVE_PROMPT_ID`, `ACTIVE_PROMPT_PATH`, `LAST_USER_APPROVAL`, `PHASE=READY_FOR_EXECUTION`, and `LAST_UPDATED_UTC` before dispatch.
+- In Manual mode, the receiving Executor sets those same prompt pointers when it archives the exact approved prompt.
+- At completion, Executor sets `LATEST_RESULT_PATH`, `PHASE=AWAITING_REVIEW`, and `LAST_UPDATED_UTC` without rewriting Reviewer-owned prompt scope.
+- After review, a local Reviewer may set `PHASE=AWAITING_USER_DECISION`. Historical facts remain in `STEP_LOG.md`; do not copy them into state.
 
 ## Reading And Recovery
 

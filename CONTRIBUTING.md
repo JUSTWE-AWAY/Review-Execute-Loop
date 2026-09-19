@@ -19,6 +19,7 @@ Run:
 
 ```bash
 python tools/validate.py --distribution .
+python -m unittest discover -s tests -v
 ```
 
 Explain the user problem, the smallest proposed change, and whether the change affects both transport modes.

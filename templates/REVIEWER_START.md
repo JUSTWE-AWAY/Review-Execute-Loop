@@ -28,9 +28,10 @@ After approval in Direct mode:
 
 1. create one complete prompt from `.workflow/templates/EXECUTION_PROMPT.md` under `.workflow/prompts/review/`;
 2. assign a unique `PROMPT_ID` and record the exact approved scope;
-3. append one `PROMPT_ISSUED` event to `.workflow/STEP_LOG.md`;
-4. in Direct mode, dispatch one concise message containing the prompt ID/path, target, and return target;
-5. do not execute the prompt yourself.
+3. update `CURRENT_STEP_ID`, `ACTIVE_PROMPT_ID`, `ACTIVE_PROMPT_PATH`, `LAST_USER_APPROVAL`, `PHASE=READY_FOR_EXECUTION`, and `LAST_UPDATED_UTC` in `.workflow/WORKFLOW_STATE.md`;
+4. append one `PROMPT_ISSUED` event to `.workflow/STEP_LOG.md`;
+5. dispatch one concise message containing the prompt ID/path, target, and return target;
+6. do not execute the prompt yourself.
 
 After approval in Manual mode, return the complete prompt and a short review receipt to the user. You cannot claim to have written local prompt/log files unless the environment actually provides that access. The receiving Executor will archive the exact approved prompt and record `MANUAL_PROMPT_RECEIVED`; it may not rewrite your scope while importing it.
 

@@ -30,3 +30,6 @@ LAST_UPDATED_UTC=YYYY-MM-DDTHH:MM:SSZ
 - Manual mode may use `NOT_APPLICABLE` IDs.
 - Update this file only for current pointers and bindings. Historical decisions belong in `STEP_LOG.md`.
 - Do not infer or invent task IDs.
+- Direct Reviewer owns the active prompt, approval, step, and dispatch phase pointers.
+- Manual Executor owns those prompt pointers only when importing the exact user-approved prompt.
+- Executor owns the latest result pointer and completion phase. Each role updates `LAST_UPDATED_UTC` with its own state change.

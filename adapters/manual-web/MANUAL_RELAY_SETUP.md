@@ -15,7 +15,7 @@ Copy the `Completion Receipt` and the concise content of `STEP_RESULT.md`. Uploa
 
 ## Reviewer To Executor
 
-The Reviewer should return one complete prompt following `.workflow/templates/EXECUTION_PROMPT.md` plus a short review receipt. The user approves it before transfer. The Executor archives that exact prompt under `.workflow/prompts/review/`, preserves its unique `PROMPT_ID` (or assigns one only when missing), appends `MANUAL_PROMPT_RECEIVED` with the approval reference, and then executes it. Executor does not append a fake `REVIEW_COMPLETED` event or alter the reviewed scope.
+The Reviewer should return one complete prompt following `.workflow/templates/EXECUTION_PROMPT.md` plus a short review receipt. The user approves it before transfer. The Executor archives that exact prompt under `.workflow/prompts/review/`, preserves its unique `PROMPT_ID` (or assigns one only when missing), updates the active prompt pointers and approval reference in `WORKFLOW_STATE.md`, appends `MANUAL_PROMPT_RECEIVED`, and then executes it. Executor does not append a fake `REVIEW_COMPLETED` event or alter the reviewed scope.
 
 Do not ask the user to copy a separate long handoff, status file, and prompt when one complete result or prompt is sufficient.
 

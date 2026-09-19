@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
@@ -21,6 +22,7 @@ DISTRIBUTION_FILES = (
     "starter/AGENTS.md.example",
     "templates/REVIEWER_START.md",
     "templates/EXECUTOR_START.md",
+    "templates/PROJECT_SETUP_START.md",
     "templates/EXECUTION_PROMPT.md",
     "templates/STEP_RESULT.md",
     "profiles/generic.md",
@@ -45,18 +47,14 @@ PROJECT_FILES = (
     ".workflow/PROFILE.md",
     ".workflow/templates/REVIEWER_START.md",
     ".workflow/templates/EXECUTOR_START.md",
+    ".workflow/templates/PROJECT_SETUP_START.md",
     ".workflow/templates/EXECUTION_PROMPT.md",
     ".workflow/templates/STEP_RESULT.md",
 )
 
-FORBIDDEN_DISTRIBUTION_TEXT = (
-    "C:/Users/",
-    "C:\\Users\\",
-    "E:/yzf/",
-    "E:\\yzf\\",
-    "mu01",
-    "zhangshuo",
-    "GPT_CODEX_WORKFLOW_TOOLKIT",
+PRIVATE_PATH_PATTERNS = (
+    re.compile(r"\b[A-Za-z]:[\\/](?:Users|Documents and Settings)[\\/](?!<|your)[^\\/\s]+", re.IGNORECASE),
+    re.compile(r"(?<![\w<])/home/(?!<|your)[^/\s]+", re.IGNORECASE),
 )
 
 LINK_PATTERN = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
@@ -64,6 +62,12 @@ LINK_PATTERN = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 
 def markdown_files(root: Path):
     yield from root.rglob("*.md")
+
+
+def configured_private_markers() -> tuple[str, ...]:
+    """Load optional local-only markers without publishing private literals."""
+    raw = os.environ.get("REVIEW_EXECUTE_PRIVATE_MARKERS", "")
+    return tuple(marker.strip() for marker in raw.split(",") if marker.strip())
 
 
 def parse_state(path: Path) -> dict[str, str]:
@@ -125,6 +129,11 @@ def validate_distribution(root: Path) -> tuple[list[str], list[str]]:
             "## Checks",
             "## Completion Receipt",
         ),
+        "templates/PROJECT_SETUP_START.md": (
+            "not yet the independent Reviewer",
+            "must not begin substantive project work",
+            "SETUP_CONFIRMED",
+        ),
     }
     for relative, tokens in required_tokens.items():
         text = (root / relative).read_text(encoding="utf-8-sig")
@@ -141,14 +150,19 @@ def validate_distribution(root: Path) -> tuple[list[str], list[str]]:
             ".yaml",
         }:
             continue
-        # This validator contains the deny-list literals by design.
+        # The validator contains its own generic path-detection patterns.
         if path.resolve() == Path(__file__).resolve():
             continue
         text = path.read_text(encoding="utf-8-sig")
-        for forbidden in FORBIDDEN_DISTRIBUTION_TEXT:
-            if forbidden.lower() in text.lower():
+        for pattern in PRIVATE_PATH_PATTERNS:
+            if pattern.search(text):
                 errors.append(
-                    f"private/environment-specific text in {path.relative_to(root)}: {forbidden}"
+                    f"private user path in {path.relative_to(root)}"
+                )
+        for marker in configured_private_markers():
+            if marker.lower() in text.lower():
+                errors.append(
+                    f"configured private marker in {path.relative_to(root)}"
                 )
 
     errors.extend(validate_links(root))

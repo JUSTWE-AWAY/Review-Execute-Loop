@@ -114,10 +114,11 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
     print(f"Mode: {mode.upper()} | Profile: {profile}")
     print(agents_message)
     print("Next:")
-    print("1. Complete and approve .workflow/PROJECT_BRIEF.md")
-    print("2. Complete role bindings in .workflow/WORKFLOW_STATE.md")
-    print("3. Give .workflow/templates/EXECUTOR_START.md to the Executor")
-    print("4. Give .workflow/templates/REVIEWER_START.md to the Reviewer")
+    print("1. Give .workflow/templates/PROJECT_SETUP_START.md to the first project window")
+    print("2. Complete and approve .workflow/PROJECT_BRIEF.md")
+    print("3. Complete role bindings in .workflow/WORKFLOW_STATE.md")
+    print("4. Give .workflow/templates/EXECUTOR_START.md to the Executor")
+    print("5. Give .workflow/templates/REVIEWER_START.md to the independent Reviewer")
 
 
 def main() -> int:

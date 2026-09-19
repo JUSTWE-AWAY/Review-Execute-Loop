@@ -11,7 +11,7 @@ Read:
 5. the active approved execution prompt
 6. only the matching recent log events and files named by that prompt
 
-Confirm the active `PROMPT_ID`, `STEP_ID`, allowed writes, protected paths, checks, repair budget, result path, and return target. In Manual mode, archive the exact user-approved prompt under `.workflow/prompts/review/` before execution if it is not already there, then append `MANUAL_PROMPT_RECEIVED` with the user-approval reference. This is a transport record; do not rewrite or approve the imported prompt.
+Confirm the active `PROMPT_ID`, `STEP_ID`, allowed writes, protected paths, checks, repair budget, result path, and return target. In Manual mode, archive the exact user-approved prompt under `.workflow/prompts/review/` before execution if it is not already there; update `CURRENT_STEP_ID`, `ACTIVE_PROMPT_ID`, `ACTIVE_PROMPT_PATH`, `LAST_USER_APPROVAL`, `PHASE=READY_FOR_EXECUTION`, and `LAST_UPDATED_UTC`; then append `MANUAL_PROMPT_RECEIVED` with the user-approval reference. This is a transport record; do not rewrite or approve the imported prompt.
 
 Execute only that scope. You may inspect necessary read-only dependencies and perform bounded technical repairs allowed by the prompt. Stop on a goal/scope conflict, factual disagreement, unavailable authorization, unsafe action, or exhausted repair budget.
 
@@ -19,7 +19,7 @@ At completion:
 
 1. create one result record using `.workflow/templates/STEP_RESULT.md` at the required result path;
 2. append exactly one `EXECUTION_COMPLETED` event to `.workflow/STEP_LOG.md`;
-3. update only current pointers in `.workflow/WORKFLOW_STATE.md`;
+3. update `LATEST_RESULT_PATH`, `PHASE=AWAITING_REVIEW`, and `LAST_UPDATED_UTC` in `.workflow/WORKFLOW_STATE.md` without rewriting the approved prompt scope;
 4. send one concise completion receipt to the Reviewer in Direct mode, or give it to the user in Manual mode;
 5. stop without drafting or executing the next task.
 

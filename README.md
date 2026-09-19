@@ -52,12 +52,29 @@ Both modes use the same prompt and result contracts. Only transport changes.
 
 ## Five-Minute Start
 
+First obtain the toolkit:
+
+```bash
+git clone https://github.com/JUSTWE-AWAY/Review-Execute-Loop.git
+cd Review-Execute-Loop
+```
+
+Alternatively, use GitHub's **Code > Download ZIP**, extract it, and open a terminal in the extracted folder.
+
 ### Option A: Initialize With Python
 
 Python 3.9+ is sufficient; there are no third-party dependencies.
 
+Windows:
+
+```powershell
+py -3 tools/init.py E:/path/to/project --profile research --mode direct
+```
+
+macOS or Linux:
+
 ```bash
-python tools/init.py /path/to/your-project --profile research --mode direct
+python3 tools/init.py /path/to/your-project --profile research --mode direct
 ```
 
 Profiles: `generic`, `research`, `software`, and `writing`. Modes: `direct` and `manual`.
@@ -70,15 +87,15 @@ The initializer never overwrites an existing `.workflow/` directory or `AGENTS.m
 2. Copy `templates/` to `.workflow/templates/`.
 3. Choose one file from `profiles/` and copy it to `.workflow/PROFILE.md`.
 4. For Codex, adapt `starter/AGENTS.md.example` into project-root `AGENTS.md`; preserve existing project instructions.
-5. Fill `.workflow/PROJECT_BRIEF.md` and `.workflow/WORKFLOW_STATE.md`.
-6. Give `.workflow/templates/EXECUTOR_START.md` to the execution window.
-7. Give `.workflow/templates/REVIEWER_START.md` to the review window.
+5. Give `.workflow/templates/PROJECT_SETUP_START.md` to the first project window.
+6. After setup is approved, give `.workflow/templates/EXECUTOR_START.md` to that window.
+7. Give `.workflow/templates/REVIEWER_START.md` to the independent review window.
 
 For Direct Loop, bind two distinct task IDs before routine dispatch. For Manual Relay, task IDs may stay `NOT_APPLICABLE`.
 
 ## First Project Cycle
 
-1. Discuss the goal in the first window; do not execute yet.
+1. Give the first window `.workflow/templates/PROJECT_SETUP_START.md` and discuss the goal; do not execute project work yet.
 2. Confirm `PROJECT_BRIEF.md` with the user.
 3. Let that first window become the Executor and perform setup only.
 4. Open a distinct Reviewer, or use a web reviewer in Manual Relay mode.
@@ -148,10 +165,6 @@ python tools/validate.py --project /path/to/your-project
 ```
 
 The validator is read-only and uses only the Python standard library.
-
-## What This Toolkit Does Not Include
-
-Version 0.1 intentionally excludes server schedulers, publication workflows, evidence databases, multi-agent swarms, automatic Pro escalation, and domain-specific approval ladders. Add those as separate extensions only when a real project needs them.
 
 ## License
 
