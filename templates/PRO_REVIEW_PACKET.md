@@ -5,7 +5,7 @@ Create this as `00_PRO_REVIEW_PACKET.md` inside one flat `.workflow/pro_reviews/
 `Pro` means a temporary deep-review role with more time for decision review or independent cold review. It does not name a particular product or model. Pro does not execute project work, modify project artifacts, or authorize the next execution prompt.
 
 ```text
-SCHEMA=review-execute-loop/0.2
+SCHEMA=review-execute-loop/0.3
 PRO_REVIEW_ID=<unique-id>
 REVIEW_KIND=<DECISION_REVIEW-or-COLD_REVIEW>
 BASELINE_STEP_ID=<step-id-or-setup>

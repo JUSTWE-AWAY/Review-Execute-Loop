@@ -1,0 +1,49 @@
+{
+  "format": 1,
+  "managed_files": {
+    ".workflow/WORKFLOW.md": {
+      "sha256": "9922bf00574ff9c8c3c9f3d9ec34e547dfb21c9c9068a5a2162eb43d2559e850",
+      "source": "starter/.workflow/WORKFLOW.md"
+    },
+    ".workflow/templates/EXECUTION_PROMPT.md": {
+      "sha256": "ade1856337dc92758e70f5b3c5cf198b425c24c0cd4951a83c37b72e6cf59874",
+      "source": "templates/EXECUTION_PROMPT.md"
+    },
+    ".workflow/templates/EXECUTOR_START.md": {
+      "sha256": "7bb7fcf7544426f8432e3869afd541b723955766cc27b6615c8c36137c782217",
+      "source": "templates/EXECUTOR_START.md"
+    },
+    ".workflow/templates/PROJECT_SETUP_START.md": {
+      "sha256": "f034686333440e699ec57e5bc7b813a15fbdc10766036540ce7c60e3fe8e5d4a",
+      "source": "templates/PROJECT_SETUP_START.md"
+    },
+    ".workflow/templates/REVIEWER_START.md": {
+      "sha256": "552b7a18a96b9bc6e67e64194e2e35f8975756b01cbe0e1f905483e554156e49",
+      "source": "templates/REVIEWER_START.md"
+    },
+    ".workflow/templates/STEP_RESULT.md": {
+      "sha256": "674d8d4f82dce0ac6f1eda3804d038cbd1ea3f0f2edc395913c8980769685bed",
+      "source": "templates/STEP_RESULT.md"
+    }
+  },
+  "profile_hashes": {
+    "generic": {
+      "sha256": "cf0c071b23205a6197e71a8ae887a22b82140c309e8186cba51a7394e6f843a7",
+      "source": "profiles/generic.md"
+    },
+    "research": {
+      "sha256": "864dcb73dda07a22975f3435df7e462e93f54eca3c3248fa4b5acb4b165251b2",
+      "source": "profiles/research.md"
+    },
+    "software": {
+      "sha256": "56f850addfd81b0a82cc3c35954dd7b4d56a241a1961a53ab5559d737d70525a",
+      "source": "profiles/software.md"
+    },
+    "writing": {
+      "sha256": "1921a9f6c8fde4379c38f7a1a4e512b7632f11b7690e67cd4aa0eade898f18b4",
+      "source": "profiles/writing.md"
+    }
+  },
+  "toolkit_version": "0.1.1",
+  "workflow_schema": "0.1"
+}

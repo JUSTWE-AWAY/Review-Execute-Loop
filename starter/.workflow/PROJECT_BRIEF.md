@@ -19,6 +19,7 @@ What should not be changed, investigated, or produced?
 
 ## Inputs And Starting Point
 
+- Protected incoming-material root: `incoming/`
 - Existing files, data, code, drafts, or references:
 - Known source of truth:
 - Important assumptions:

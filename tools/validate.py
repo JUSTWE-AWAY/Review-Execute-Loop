@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -20,11 +21,16 @@ DISTRIBUTION_FILES = (
     "starter/.workflow/REFERENCE_PLAN.md",
     "starter/.workflow/WORKFLOW_STATE.md",
     "starter/.workflow/STEP_LOG.md",
+    "starter/incoming/README.md",
     "starter/deliverables/README.md",
     "starter/AGENTS.md.example",
     "templates/REVIEWER_START.md",
     "templates/EXECUTOR_START.md",
     "templates/PROJECT_SETUP_START.md",
+    "templates/STEP0_START.md",
+    "templates/WEB_REVIEW_PACKET.md",
+    "templates/WEB_REVIEW_RETURN.md",
+    "templates/WORKFLOW_UPDATE_START.md",
     "templates/PRO_REVIEW_PACKET.md",
     "templates/PRO_FEEDBACK_TEMPLATE.md",
     "templates/EXECUTION_PROMPT.md",
@@ -40,7 +46,14 @@ DISTRIBUTION_FILES = (
     "examples/research-example/README.md",
     "examples/software-example/README.md",
     "tools/init.py",
+    "tools/review_packet.py",
+    "tools/update_project.py",
     "tools/validate.py",
+    "tools/workflow_manifest.py",
+    "tools/generate_release_manifest.py",
+    "manifests/releases/v0.1.1.json",
+    "manifests/releases/v0.2.0.json",
+    "manifests/releases/v0.3.0.json",
 )
 
 PROJECT_FILES_BASE = (
@@ -60,6 +73,13 @@ PROJECT_FILES_V02 = (
     ".workflow/REFERENCE_PLAN.md",
     ".workflow/templates/PRO_REVIEW_PACKET.md",
     ".workflow/templates/PRO_FEEDBACK_TEMPLATE.md",
+)
+
+PROJECT_FILES_V03 = PROJECT_FILES_V02 + (
+    ".workflow/templates/STEP0_START.md",
+    ".workflow/templates/WEB_REVIEW_PACKET.md",
+    ".workflow/templates/WEB_REVIEW_RETURN.md",
+    ".workflow/templates/WORKFLOW_UPDATE_START.md",
 )
 
 PRIVATE_PATH_PATTERNS = (
@@ -121,6 +141,7 @@ def validate_distribution(root: Path) -> tuple[list[str], list[str]]:
 
     required_tokens = {
         "starter/.workflow/WORKFLOW.md": (
+            "### Setup Facilitator / Executor Candidate",
             "### Reviewer / Orchestrator",
             "### Executor",
             "### Pro Reviewer / Deep Reviewer (Optional)",
@@ -129,6 +150,7 @@ def validate_distribution(root: Path) -> tuple[list[str], list[str]]:
             "## Reading And Recovery",
             "## File Safety",
             "## Optional Pro Review",
+            "## External Web Review Packets",
             "## Final Deliverables",
         ),
         "templates/EXECUTION_PROMPT.md": (
@@ -147,9 +169,30 @@ def validate_distribution(root: Path) -> tuple[list[str], list[str]]:
             "## Completion Receipt",
         ),
         "templates/PROJECT_SETUP_START.md": (
-            "not yet the independent Reviewer",
-            "must not begin substantive project work",
+            "Executor Candidate",
+            "Do not begin substantive project work",
             "SETUP_CONFIRMED",
+        ),
+        "templates/STEP0_START.md": (
+            "STEP_ID=step0",
+            "EXECUTOR_STATUS=CANDIDATE",
+            "incoming/",
+        ),
+        "templates/WEB_REVIEW_PACKET.md": (
+            "REVIEW_PACKET_ID=",
+            "You are the independent Reviewer / Orchestrator",
+            "NEXT_EXECUTION_PROMPT",
+        ),
+        "templates/WEB_REVIEW_RETURN.md": (
+            "REVIEW_PACKET_ID=",
+            "NEXT_PROMPT_APPROVED=",
+            "EXECUTOR_PROMOTION=",
+        ),
+        "templates/WORKFLOW_UPDATE_START.md": (
+            "--check",
+            "--prepare",
+            "--apply",
+            "Never overwrite",
         ),
         "templates/PRO_REVIEW_PACKET.md": (
             "PRO_REVIEW_ID=",
@@ -192,6 +235,19 @@ def validate_distribution(root: Path) -> tuple[list[str], list[str]]:
                     f"configured private marker in {path.relative_to(root)}"
                 )
 
+    for relative in (
+        "manifests/releases/v0.1.1.json",
+        "manifests/releases/v0.2.0.json",
+        "manifests/releases/v0.3.0.json",
+    ):
+        try:
+            manifest = json.loads((root / relative).read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError) as error:
+            errors.append(f"invalid release manifest {relative}: {error}")
+            continue
+        if not isinstance(manifest.get("managed_files"), dict):
+            errors.append(f"release manifest has no managed_files map: {relative}")
+
     errors.extend(validate_links(root))
     return errors, warnings
 
@@ -216,9 +272,21 @@ def validate_project(root: Path) -> tuple[list[str], list[str]]:
                 errors.append(f"missing v0.2 project workflow file: {relative}")
         if not (root / "deliverables").is_dir():
             warnings.append("v0.2 project has no deliverables directory")
+    elif schema == "0.3":
+        for relative in PROJECT_FILES_V03:
+            if not (root / relative).is_file():
+                errors.append(f"missing v0.3 project workflow file: {relative}")
+        if not (root / "deliverables").is_dir():
+            warnings.append("v0.3 project has no deliverables directory")
+        if not (root / "incoming").is_dir():
+            warnings.append("v0.3 project has no protected incoming directory")
+        if not (root / ".workflow" / "INSTALL_MANIFEST.json").is_file():
+            warnings.append(
+                "v0.3 project has no install manifest; upgrades will use the release baseline"
+            )
     elif schema == "0.1":
         warnings.append("project uses legacy workflow schema 0.1")
-    else:
+    elif schema != "0.1":
         errors.append(f"unsupported or missing workflow schema: {schema or 'MISSING'}")
     if errors:
         return errors, warnings
@@ -243,6 +311,22 @@ def validate_project(root: Path) -> tuple[list[str], list[str]]:
             "ACTIVE_PRO_REVIEW_ID",
             "ACTIVE_PRO_REVIEW_PATH",
         )
+    elif schema == "0.3":
+        required_state += (
+            "TOOLKIT_VERSION",
+            "ACTIVE_REFERENCE_PLAN_ID",
+            "ACTIVE_REFERENCE_PLAN_PATH",
+            "DELIVERABLES_ROOT",
+            "EXECUTOR_TASK_LINK",
+            "EXECUTOR_STATUS",
+            "REVIEWER_TASK_LINK",
+            "RETURN_TARGET_TASK_LINK",
+            "ACTIVE_PROMPT_PATH",
+            "ACTIVE_REVIEW_PACKET_ID",
+            "ACTIVE_REVIEW_PACKET_PATH",
+            "ACTIVE_PRO_REVIEW_ID",
+            "ACTIVE_PRO_REVIEW_PATH",
+        )
     for key in required_state:
         if not state.get(key):
             errors.append(f"missing state field: {key}")
@@ -251,6 +335,8 @@ def validate_project(root: Path) -> tuple[list[str], list[str]]:
         executor = state.get("EXECUTOR_TASK_ID", "")
         reviewer = state.get("REVIEWER_TASK_ID", "")
         return_target = state.get("RETURN_TARGET_TASK_ID", "")
+        executor_link = state.get("EXECUTOR_TASK_LINK", "")
+        reviewer_link = state.get("REVIEWER_TASK_LINK", "")
         pending = any("PENDING" in value or not value for value in (executor, reviewer, return_target))
         if pending:
             message = "DIRECT mode role IDs are not fully bound"
@@ -262,6 +348,27 @@ def validate_project(root: Path) -> tuple[list[str], list[str]]:
             errors.append("DIRECT mode Executor and Reviewer IDs must differ")
         elif return_target != reviewer:
             warnings.append("RETURN_TARGET_TASK_ID normally equals REVIEWER_TASK_ID")
+        if schema == "0.3" and phase not in {"SETUP", "WAITING_FOR_REVIEWER_BINDING"}:
+            if not executor_link or "PENDING" in executor_link:
+                warnings.append("DIRECT mode Executor deep link is not recorded")
+            if not reviewer_link or "PENDING" in reviewer_link:
+                warnings.append("DIRECT mode Reviewer deep link is not recorded")
+
+    if schema == "0.3":
+        executor_status = state.get("EXECUTOR_STATUS", "")
+        if executor_status not in {"CANDIDATE", "ACTIVE", "PAUSED", "CLOSED"}:
+            errors.append(
+                "EXECUTOR_STATUS must be CANDIDATE, ACTIVE, PAUSED, or CLOSED"
+            )
+        install_manifest = root / ".workflow" / "INSTALL_MANIFEST.json"
+        if install_manifest.is_file():
+            try:
+                manifest = json.loads(install_manifest.read_text(encoding="utf-8-sig"))
+            except (OSError, json.JSONDecodeError) as error:
+                errors.append(f"invalid INSTALL_MANIFEST.json: {error}")
+            else:
+                if manifest.get("workflow_schema") != "0.3":
+                    warnings.append("install manifest does not identify workflow schema 0.3")
 
     brief_text = (root / ".workflow" / "PROJECT_BRIEF.md").read_text(
         encoding="utf-8-sig"

@@ -3,7 +3,7 @@
 Return this as `PRO_FEEDBACK.md` in the same flat packet folder or provide the complete Markdown text to the user.
 
 ```text
-SCHEMA=review-execute-loop/0.2
+SCHEMA=review-execute-loop/0.3
 PRO_REVIEW_ID=<matching-id>
 REVIEW_KIND=<DECISION_REVIEW-or-COLD_REVIEW>
 RECOMMENDATION=<short-decision>

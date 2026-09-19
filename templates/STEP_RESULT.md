@@ -1,7 +1,7 @@
 # Step Result
 
 ```text
-SCHEMA=review-execute-loop/0.2
+SCHEMA=review-execute-loop/0.3
 PROMPT_ID=<prompt-id>
 STEP_ID=<step-id>
 STEP_KIND=<step-kind>
@@ -10,6 +10,7 @@ STATUS=<COMPLETED-or-PARTIAL-or-BLOCKED>
 ACTIVE_BRIEF_ID=<brief-id>
 ACTIVE_REFERENCE_PLAN_ID=<plan-id-or-NONE>
 PRO_REVIEW_SOURCE=<pro-review-id-or-NONE>
+REVIEW_SOURCE=<review-event-or-manual-review-return-path-or-NONE>
 DELIVERABLE_TARGET=<path-or-NONE>
 STARTED_UTC=<timestamp>
 FINISHED_UTC=<timestamp>
@@ -64,6 +65,7 @@ RESULT_PATH=<this file>
 KEY_FILES=<short list>
 DECISION_NEEDED=<YES-or-NO>
 PRO_REVIEW_SOURCE=<pro-review-id-or-NONE>
+REVIEW_SOURCE=<review-event-or-manual-review-return-path-or-NONE>
 DELIVERABLES_UPDATED=<short-path-list-or-NONE>
 RETURN_TARGET=<reviewer-task-id-or-MANUAL>
 ```

@@ -1,0 +1,73 @@
+{
+  "format": 1,
+  "managed_files": {
+    ".workflow/WORKFLOW.md": {
+      "sha256": "ce9c9c16da2d39c2d087f2d44810d7ae7bd3bf9603ec071d68b1661677baec71",
+      "source": "starter/.workflow/WORKFLOW.md"
+    },
+    ".workflow/templates/EXECUTION_PROMPT.md": {
+      "sha256": "e3d1380e8bf9f1f3916bd47e1552f3808344e001aad2c523419719933296063a",
+      "source": "templates/EXECUTION_PROMPT.md"
+    },
+    ".workflow/templates/EXECUTOR_START.md": {
+      "sha256": "a9cbfdf062a2bfe7036f8eac08c583a8044419b95afde93eeb570a70f769b74e",
+      "source": "templates/EXECUTOR_START.md"
+    },
+    ".workflow/templates/PROJECT_SETUP_START.md": {
+      "sha256": "f2a9ba1da7c1553f5c33216f4bfeab49d5b84b15c8fc113e1f140fac62a46325",
+      "source": "templates/PROJECT_SETUP_START.md"
+    },
+    ".workflow/templates/PRO_FEEDBACK_TEMPLATE.md": {
+      "sha256": "8f343150a26918c93d84541503c568839854f89895d4b0c7511f1fce530157f9",
+      "source": "templates/PRO_FEEDBACK_TEMPLATE.md"
+    },
+    ".workflow/templates/PRO_REVIEW_PACKET.md": {
+      "sha256": "14d7458c123fdc7dbc36224e3cfc17adbcea8cf4cc9de423a3fef116259ce5ce",
+      "source": "templates/PRO_REVIEW_PACKET.md"
+    },
+    ".workflow/templates/REVIEWER_START.md": {
+      "sha256": "c8e8055304e6f9d52570eed3a6ae338913f30b0dba88a4c9af6c758474c74c84",
+      "source": "templates/REVIEWER_START.md"
+    },
+    ".workflow/templates/STEP0_START.md": {
+      "sha256": "22ef688d0e5a22331af2612deaddd66069fd598274cbfa2a39a93d36551c016c",
+      "source": "templates/STEP0_START.md"
+    },
+    ".workflow/templates/STEP_RESULT.md": {
+      "sha256": "5565ec2a17b8ade72bbe18a1a2e95387a6e965f7988e062e25a17c2e15b5ace1",
+      "source": "templates/STEP_RESULT.md"
+    },
+    ".workflow/templates/WEB_REVIEW_PACKET.md": {
+      "sha256": "7c789e893b840eff78556c38bedb9fb6e05296f0531df5cfb42a6f202e94dfb9",
+      "source": "templates/WEB_REVIEW_PACKET.md"
+    },
+    ".workflow/templates/WEB_REVIEW_RETURN.md": {
+      "sha256": "98b3be47adef07dda773037c6d11a470ef2739ddc33c7d3b7e553b1e18b35960",
+      "source": "templates/WEB_REVIEW_RETURN.md"
+    },
+    ".workflow/templates/WORKFLOW_UPDATE_START.md": {
+      "sha256": "5a5eab090235685a2fd36e4e731150ac32e43c2364a817c158640a03b99d4d76",
+      "source": "templates/WORKFLOW_UPDATE_START.md"
+    }
+  },
+  "profile_hashes": {
+    "generic": {
+      "sha256": "cf0c071b23205a6197e71a8ae887a22b82140c309e8186cba51a7394e6f843a7",
+      "source": "profiles/generic.md"
+    },
+    "research": {
+      "sha256": "864dcb73dda07a22975f3435df7e462e93f54eca3c3248fa4b5acb4b165251b2",
+      "source": "profiles/research.md"
+    },
+    "software": {
+      "sha256": "56f850addfd81b0a82cc3c35954dd7b4d56a241a1961a53ab5559d737d70525a",
+      "source": "profiles/software.md"
+    },
+    "writing": {
+      "sha256": "1921a9f6c8fde4379c38f7a1a4e512b7632f11b7690e67cd4aa0eade898f18b4",
+      "source": "profiles/writing.md"
+    }
+  },
+  "toolkit_version": "0.3.0",
+  "workflow_schema": "0.3"
+}

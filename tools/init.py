@@ -10,6 +10,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from workflow_manifest import build_manifest, write_manifest
+
 
 PROFILES = ("generic", "research", "software", "writing")
 MODES = ("direct", "manual")
@@ -26,6 +28,7 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
     starter = repo_root / "starter" / ".workflow"
     templates_source = repo_root / "templates"
     deliverables_source = repo_root / "starter" / "deliverables"
+    incoming_source = repo_root / "starter" / "incoming"
     profile_source = repo_root / "profiles" / f"{profile}.md"
     agents_source = repo_root / "starter" / "AGENTS.md.example"
     agents_block = repo_root / "adapters" / "codex" / "AGENTS_BLOCK.md"
@@ -34,6 +37,7 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
         starter,
         templates_source,
         deliverables_source,
+        incoming_source,
         profile_source,
         agents_source,
         agents_block,
@@ -55,12 +59,16 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
     temporary_root = Path(tempfile.mkdtemp(prefix=".review_execute_init_", dir=target))
     staged_workflow = temporary_root / ".workflow"
     staged_deliverables = temporary_root / "deliverables"
+    staged_incoming = temporary_root / "incoming"
     deliverables_target = target / "deliverables"
+    incoming_target = target / "incoming"
     deliverables_message = ""
+    incoming_message = ""
     try:
         shutil.copytree(starter, staged_workflow)
         shutil.copytree(templates_source, staged_workflow / "templates")
         shutil.copytree(deliverables_source, staged_deliverables)
+        shutil.copytree(incoming_source, staged_incoming)
         shutil.copy2(profile_source, staged_workflow / "PROFILE.md")
 
         state_path = staged_workflow / "WORKFLOW_STATE.md"
@@ -85,6 +93,18 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
                 "RETURN_TARGET_TASK_ID=PENDING_OR_NOT_APPLICABLE",
                 "RETURN_TARGET_TASK_ID=MANUAL",
             )
+            state = state.replace(
+                "EXECUTOR_TASK_LINK=PENDING_OR_NOT_APPLICABLE",
+                "EXECUTOR_TASK_LINK=NOT_APPLICABLE",
+            )
+            state = state.replace(
+                "REVIEWER_TASK_LINK=PENDING_OR_NOT_APPLICABLE",
+                "REVIEWER_TASK_LINK=NOT_APPLICABLE",
+            )
+            state = state.replace(
+                "RETURN_TARGET_TASK_LINK=PENDING_OR_NOT_APPLICABLE",
+                "RETURN_TARGET_TASK_LINK=MANUAL",
+            )
         else:
             state = state.replace(
                 "PENDING_OR_NOT_APPLICABLE", "PENDING_ID_CAPTURE"
@@ -98,6 +118,11 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
         )
         brief_path.write_text(brief, encoding="utf-8")
 
+        write_manifest(
+            staged_workflow / "INSTALL_MANIFEST.json",
+            build_manifest(repo_root, temporary_root, profile),
+        )
+
         os.replace(staged_workflow, workflow_target)
         if deliverables_target.exists():
             deliverables_message = (
@@ -106,6 +131,13 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
         else:
             os.replace(staged_deliverables, deliverables_target)
             deliverables_message = f"Created {deliverables_target}."
+        if incoming_target.exists():
+            incoming_message = (
+                f"Existing {incoming_target} preserved; no files were added to it."
+            )
+        else:
+            os.replace(staged_incoming, incoming_target)
+            incoming_message = f"Created protected source-material root {incoming_target}."
     finally:
         shutil.rmtree(temporary_root, ignore_errors=True)
 
@@ -127,13 +159,14 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
     print(f"Mode: {mode.upper()} | Profile: {profile}")
     print(agents_message)
     print(deliverables_message)
+    print(incoming_message)
     print("Next:")
     print("1. Give .workflow/templates/PROJECT_SETUP_START.md to the first project window")
-    print("2. Complete and approve .workflow/PROJECT_BRIEF.md")
-    print("3. Optionally approve .workflow/REFERENCE_PLAN.md")
-    print("4. Complete role bindings in .workflow/WORKFLOW_STATE.md")
-    print("5. Give .workflow/templates/EXECUTOR_START.md to the Executor")
-    print("6. Give .workflow/templates/REVIEWER_START.md to the independent Reviewer")
+    print("2. Put prior source materials under incoming/ without modifying them")
+    print("3. Complete and approve .workflow/PROJECT_BRIEF.md")
+    print("4. Optionally approve .workflow/REFERENCE_PLAN.md")
+    print("5. Run the fixed .workflow/templates/STEP0_START.md after approval")
+    print("6. Create or select the independent Reviewer and record IDs/links")
 
 
 def main() -> int:

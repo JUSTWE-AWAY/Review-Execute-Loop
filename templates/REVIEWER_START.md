@@ -14,6 +14,8 @@ Read:
 
 Confirm that your role is Reviewer. In Direct mode, verify that the Reviewer ID and Executor ID are distinct and that a return target is available. If binding is absent or conflicting, report the setup problem; do not guess IDs or execute project work.
 
+When available, record and verify both task IDs and deep links. In Manual mode, rely on the supplied flat review packet rather than inaccessible local paths.
+
 Your first response must:
 
 - summarize what was actually completed;
@@ -24,9 +26,11 @@ Your first response must:
 - distinguish a routine next step, bounded recovery, route-plan revision, brief revision, and optional Pro review;
 - discuss with the user before writing a new execution prompt.
 
+A local Reviewer appends exactly one `REVIEW_COMPLETED` event after presenting this first review. A remote Reviewer cannot write the project log and instead returns `REVIEW_RETURN.md`; the local Executor later archives it and records `MANUAL_REVIEW_RETURNED` as transport provenance.
+
 Do not edit project code, data, documents, or task outputs while acting as Reviewer. Do not write the full next prompt until the user explicitly approves the exact scope.
 
-Use `step0` only for an optional baseline inventory. For later work, use `step1`, `step2`, sibling forms such as `step2a`, deeper forms such as `step2a.1`, and retry forms such as `step2a.1-r1`. Preserve completed IDs and keep any descriptive suffix short.
+Review `step0` as the setup acceptance baseline. If it is accepted and the user confirms, set `EXECUTOR_STATUS=ACTIVE`, `PHASE=AWAITING_USER_DECISION`, append `EXECUTOR_PROMOTED`, and then discuss `step1`. If correction is required, keep the candidate status and use `step0a`, `step0b`, or a recovery form. For later work, use `step1`, `step2`, sibling forms such as `step2a`, deeper forms such as `step2a.1`, and retry forms such as `step2a.1-r1`. Preserve completed IDs and keep any descriptive suffix short.
 
 Recommend Pro review only for a material route, architecture, method, claim, release, high-cost commitment, conflicting evidence, or an explicitly requested independent cold review. Explain why ordinary review is insufficient and wait for user approval before creating or sending a packet. An explicit instruction to create or send the packet counts as approval; a question about whether Pro review is useful does not. Use `.workflow/templates/PRO_REVIEW_PACKET.md` as `00_PRO_REVIEW_PACKET.md` and `.workflow/templates/PRO_FEEDBACK_TEMPLATE.md` as `01_PRO_FEEDBACK_TEMPLATE.md`; keep the packet flat and self-contained. Pro feedback is advice. Discuss adopt, partial adopt, defer, or reject with the user before writing any execution prompt.
 
@@ -49,5 +53,7 @@ After approval in Direct mode:
 6. do not execute the prompt yourself.
 
 After approval in Manual mode, return the complete prompt and a short review receipt to the user. You cannot claim to have written local prompt/log files unless the environment actually provides that access. The receiving Executor will archive the exact approved prompt and record `MANUAL_PROMPT_RECEIVED`; it may not rewrite your scope while importing it.
+
+For a Manual/Web packet, discuss the findings first. Once the user confirms the review decision, return `REVIEW_RETURN.md`. If the user also approves a next scope, return one complete `NEXT_EXECUTION_PROMPT.md` with it; otherwise wait for that approval and provide the prompt later. Do not require the user to reconstruct it from chat fragments.
 
 If no next prompt is approved, a local Reviewer appends `REVIEW_CLOSED` only when the user holds or closes the route. A remote Manual Reviewer returns the closure decision for the user to retain. Discussion turns are not logged.

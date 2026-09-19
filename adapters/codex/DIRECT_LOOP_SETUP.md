@@ -4,15 +4,19 @@ Use this adapter only when the Codex environment can identify tasks and send mes
 
 ## Setup
 
-1. Initialize the project and use `.workflow/templates/PROJECT_SETUP_START.md` to approve `PROJECT_BRIEF.md` without starting substantive work.
-2. Keep the initial task as Executor.
-3. With explicit user approval, create or select a distinct Reviewer task.
-4. Record verified IDs in `.workflow/WORKFLOW_STATE.md`:
+1. Initialize the project, place prior materials under protected `incoming/`, and use `.workflow/templates/PROJECT_SETUP_START.md` to approve the brief and Step 0 scope.
+2. Keep the initial task as Setup Facilitator / Executor Candidate. Record its verified ID and deep link when available.
+3. Run the fixed `.workflow/templates/STEP0_START.md` after user approval and stop with a Step 0 result.
+4. With explicit user approval, create or select a distinct Reviewer task.
+5. Record verified IDs and deep links in `.workflow/WORKFLOW_STATE.md`:
    - `EXECUTOR_TASK_ID`
+   - `EXECUTOR_TASK_LINK`
    - `REVIEWER_TASK_ID`
+   - `REVIEWER_TASK_LINK`
    - `RETURN_TARGET_TASK_ID`
-5. Set `MODE=DIRECT` only after the IDs are distinct and verified.
-6. Give the two tasks their respective start prompts.
+   - `RETURN_TARGET_TASK_LINK`
+6. Reviewer checks Step 0. Promote `EXECUTOR_STATUS` from `CANDIDATE` to `ACTIVE` only after accepted review and user confirmation.
+7. `MODE=DIRECT` may be selected during setup, but routine dispatch remains blocked until distinct verified IDs and return targets are recorded. Then give the tasks their respective start prompts.
 
 ## Dispatch
 
@@ -23,6 +27,8 @@ PROMPT_ID=<id>
 PROMPT_PATH=<path>
 EXECUTOR_TARGET=<id>
 RETURN_TARGET=<reviewer-id>
+EXECUTOR_TASK_LINK=<executor-link-or-NONE>
+REVIEWER_TASK_LINK=<reviewer-link-or-NONE>
 Read the prompt, execute only its scope, return one completion receipt, and stop.
 ```
 

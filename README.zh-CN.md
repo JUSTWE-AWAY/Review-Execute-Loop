@@ -43,11 +43,11 @@
 适用于 Web Chat、不同 AI 产品、不同机器，或者不支持直接通信的环境：
 
 ```text
-审阅 prompt -> 用户复制 -> 执行窗口
-执行结果 -> 用户复制 -> 审阅窗口
+执行窗口 -> 单步平铺审阅压缩包 -> 用户 -> Web 审阅窗口
+执行窗口 <- 审阅结论和已批准 prompt <- 用户 <- Web 审阅窗口
 ```
 
-两种模式使用同一套 prompt 和结果格式，只改变传输方法。
+每个完成步骤都会在 `.workflow/review_packets/` 下形成一个自包含、平铺的审阅包。Web 审阅窗口只读取这个包，先和用户讨论，再在确认后返回 `REVIEW_RETURN.md` 与一个完整的下一步 prompt。本地执行窗口原样归档这两个文件，使外部审阅结论仍进入项目日志。两种模式使用同一套 prompt 和结果格式，只改变传输方法。
 
 ## 五分钟开始
 
@@ -78,36 +78,40 @@ python3 tools/init.py /path/to/project --profile research --mode direct
 
 可选 Profile：`generic`、`research`、`software`、`writing`。可选模式：`direct`、`manual`。
 
-初始化程序不会覆盖已有 `.workflow/`、`AGENTS.md` 或 `deliverables/` 目录。如果项目已有 `AGENTS.md`，它会保持原文件不变，并把建议加入的 Codex 规则写到 `.workflow/` 中供人工合并。
+初始化程序不会覆盖已有 `.workflow/`、`AGENTS.md`、`incoming/` 或 `deliverables/` 目录。如果项目已有 `AGENTS.md`，它会保持原文件不变，并把建议加入的 Codex 规则写到 `.workflow/` 中供人工合并。
+
+把旧论文、既有记录、数据、模型、代码等外部起始材料放入项目根目录 `incoming/`。其中内容是不可变源材料：工作流可以读取和复制，但不能编辑、重命名、移动、隔离或删除。派生文件必须写到其他位置。
 
 ### 方法 B：手动复制
 
 1. 把 `starter/.workflow/` 复制到项目根目录。
-2. 只有在项目尚无正式产物目录时，才把 `starter/deliverables/` 复制到项目根目录。
-3. 把 `templates/` 复制为 `.workflow/templates/`。
-4. 从 `profiles/` 选择一个文件，复制为 `.workflow/PROFILE.md`。
-5. 使用 Codex 时，把 `starter/AGENTS.md.example` 的相关内容合并到项目根目录 `AGENTS.md`，不要覆盖已有项目规则。
-6. 把 `.workflow/templates/PROJECT_SETUP_START.md` 交给第一个项目窗口。
-7. 初始化获得批准后，把 `.workflow/templates/EXECUTOR_START.md` 交给该窗口。
-8. 把 `.workflow/templates/REVIEWER_START.md` 交给独立审阅窗口。
+2. 只有在项目尚无 `incoming/` 时，才把 `starter/incoming/` 复制到项目根目录。
+3. 只有在项目尚无正式产物目录时，才把 `starter/deliverables/` 复制到项目根目录。
+4. 把 `templates/` 复制为 `.workflow/templates/`。
+5. 从 `profiles/` 选择一个文件，复制为 `.workflow/PROFILE.md`。
+6. 使用 Codex 时，把 `starter/AGENTS.md.example` 的相关内容合并到项目根目录 `AGENTS.md`，不要覆盖已有项目规则。
+7. 把 `.workflow/templates/PROJECT_SETUP_START.md` 交给第一个项目任务。
+8. Brief 和 Step 0 范围获批后，在同一任务运行 `.workflow/templates/STEP0_START.md`。
+9. Step 0 结果存在后，再把 `.workflow/templates/REVIEWER_START.md` 交给独立审阅窗口。
 
-Direct 模式在常规派发前需要两个不同且真实的任务 ID。Manual 模式可以把任务 ID 保持为 `NOT_APPLICABLE`。
+Direct 模式在常规派发前需要两个不同且真实的任务 ID；平台支持时还要记录双方深度链接。Manual 模式可以把任务 ID 和链接保持为 `NOT_APPLICABLE`。
 
 ## 第一个完整循环
 
-1. 把 `.workflow/templates/PROJECT_SETUP_START.md` 交给第一个窗口并讨论目标，先不执行项目任务。
-2. 和用户确认 `PROJECT_BRIEF.md`。
-3. 第一个窗口成为执行窗口，只完成初始化。
-4. 新建一个独立审阅窗口，或者在 Manual 模式使用 Web 审阅。
-5. 对已有或复杂项目，审阅窗口可以先派发可选的 `step0` 基线盘点；简单项目可以从 `step1` 开始。
-6. 审阅窗口查看最近结果，先和用户讨论下一项范围。
-7. 用户同意后，审阅窗口填写一个 `EXECUTION_PROMPT.md`。
-8. 执行窗口执行任务，生成一个 `STEP_RESULT.md`，追加一条完成事件并停止。
-9. 审阅窗口审查结果；只有再次得到用户确认才推进下一项任务。
+1. 把起始材料放入 `incoming/`，再把 `PROJECT_SETUP_START.md` 交给第一个任务。
+2. 该任务此时是“启动协调者 / 执行候选者”，负责讨论 Brief、可选参考计划、产物结构、传输模式和 Step 0 范围，不做实质项目工作。
+3. 用户明确同意后，同一候选任务运行固定的 `STEP0_START.md` 盘点并停止。
+4. Direct 模式新建独立本地审阅窗口；Manual 模式生成一个平铺 Web 审阅包。
+5. 独立审阅者检查 Step 0，并和用户讨论修正。只有审阅通过且用户确认，候选任务才晋升为正式执行窗口。
+6. 用户同意后，审阅窗口生成一个完整 `EXECUTION_PROMPT.md`。Direct 模式直接派发；Manual 模式通过 `REVIEW_RETURN.md` 与 prompt 原样导回项目。
+7. 执行窗口只执行该 prompt，生成一个 `STEP_RESULT.md`、追加一次完成事件，然后停止。
+8. 审阅窗口检查结果；只有再次得到用户确认才推进下一项任务。
+
+真正空白且简单的项目只有在用户明确同意、独立审阅者也接受启动记录时才可跳过 Step 0。第一个任务不能审阅或晋升自己。
 
 ## 项目中长期保留的文件
 
-只要求四个文件：
+四个文件构成人工阅读的核心：
 
 | 文件 | 作用 |
 |---|---|
@@ -118,11 +122,13 @@ Direct 模式在常规派发前需要两个不同且真实的任务 ID。Manual 
 
 `.workflow/REFERENCE_PLAN.md` 是可选文件，用来记录暂定路线、决策点、回退方向和假设；它不冻结探索路线，也不授权执行。
 
-每项任务只新增一个完整 prompt、一个结果记录以及真正的任务产物。不强制生成独立 summary、status flags、handoff 包或证据台账。
+`.workflow/INSTALL_MANIFEST.json` 只记录由 toolkit 管理的文件及哈希，供安全升级使用，不接管项目文件。`incoming/` 保存用户传入的起始材料，`deliverables/` 保存已经批准的最终产物。
+
+每项任务只新增一个完整 prompt、一个结果记录以及真正的任务产物。Direct 模式不强制生成 handoff 包；Manual 模式因为外部审阅者不能直接读取项目，所以每步额外生成一个平铺审阅包。不强制生成独立 status flags、证据台账，也不要求重读全部历史。
 
 ## 步骤、重试与计划修改
 
-- `step0`：已有或复杂项目的可选基线盘点；
+- `step0`：执行窗口晋升前的固定启动盘点；
 - `step1`、`step2`：主推进步骤；
 - `step2a`、`step2b`：并列子步骤；
 - `step2a.1`：更深一级子步骤；
@@ -130,6 +136,34 @@ Direct 模式在常规派发前需要两个不同且真实的任务 ID。Manual 
 - 结构化编号后可以附一个简短说明后缀。
 
 技术错误可以在 Prompt 批准的修复额度内处理；后续重试使用新的 Prompt 和 ID。新证据只改变优选路线而不改变最终目标和边界时，新建参考计划版本；目标或保护边界变化时，新建 Project Brief 版本。失败结果和旧计划都应保留，不能改写历史。
+
+## Web 审阅包
+
+Manual 模式的执行结果完成后，在项目根目录运行：
+
+```bash
+python /path/to/Review-Execute-Loop/tools/review_packet.py create . --result .workflow/step_records/<step>/STEP_RESULT.md --include <重要项目文件>
+```
+
+把生成的 ZIP 交给 Web 审阅窗口。讨论并确认后，保存它返回的两个文件，再导入项目：
+
+```bash
+python /path/to/Review-Execute-Loop/tools/review_packet.py import . --packet .workflow/review_packets/<审阅包目录> --review-return /path/to/REVIEW_RETURN.md --prompt /path/to/NEXT_EXECUTION_PROMPT.md
+```
+
+附件必须来自项目内部，并会用编号复制到同一个平铺目录。不要附带整个项目、秘密信息或无关历史。
+
+## 更新已有项目
+
+toolkit 仓库与项目保持分离。拉取新版后，可让本地执行窗口读取 `WORKFLOW_UPDATE_START.md`，或依次运行：
+
+```bash
+python /path/to/Review-Execute-Loop/tools/update_project.py /path/to/project --check
+python /path/to/Review-Execute-Loop/tools/update_project.py /path/to/project --prepare
+python /path/to/Review-Execute-Loop/tools/update_project.py /path/to/project --apply <已批准的升级ID>
+```
+
+`--check` 只读；`--prepare` 只生成升级计划；`--apply` 只安装未被修改的 toolkit 管理文件和安全新增项，并备份被替换文件。冲突项保持不动。它不会覆盖 Project Brief、计划、日志、prompt、结果、审阅包、`AGENTS.md`、`incoming/`、`deliverables/`、代码、数据或用户产物。
 
 ## 可选 Pro 审查
 

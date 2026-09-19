@@ -1,7 +1,7 @@
 # Execution Prompt
 
 ```text
-SCHEMA=review-execute-loop/0.2
+SCHEMA=review-execute-loop/0.3
 PROMPT_ID=<unique-id>
 STEP_ID=<step1-or-step2a-or-step2a.1-or-recovery-form>
 STEP_KIND=<INVENTORY-or-MAIN-or-SUBSTEP-or-RETRY-or-RECOVERY>
@@ -13,6 +13,7 @@ RETURN_TARGET=<verified-reviewer-id-or-MANUAL>
 ACTIVE_BRIEF_ID=<brief-id>
 ACTIVE_REFERENCE_PLAN_ID=<plan-id-or-NONE>
 PRO_REVIEW_SOURCE=<pro-review-id-and-feedback-path-or-NONE>
+REVIEW_SOURCE=<local-review-event-or-manual-review-return-path>
 DELIVERABLE_TARGET=<deliverables/NNN_name-or-NONE>
 USER_APPROVAL=<date/time or concise reference>
 REPAIR_BUDGET=<nonnegative integer>

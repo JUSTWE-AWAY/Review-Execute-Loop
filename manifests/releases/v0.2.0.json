@@ -1,0 +1,57 @@
+{
+  "format": 1,
+  "managed_files": {
+    ".workflow/WORKFLOW.md": {
+      "sha256": "2c631bb16132b5571e8e66895e8017e1d1a57836e0c50eccc9bd6930abecf5ac",
+      "source": "starter/.workflow/WORKFLOW.md"
+    },
+    ".workflow/templates/EXECUTION_PROMPT.md": {
+      "sha256": "3378593b49903ada813ffa12ed99932cc345ee30d5dbd4192d156172f726e76a",
+      "source": "templates/EXECUTION_PROMPT.md"
+    },
+    ".workflow/templates/EXECUTOR_START.md": {
+      "sha256": "7bb7fcf7544426f8432e3869afd541b723955766cc27b6615c8c36137c782217",
+      "source": "templates/EXECUTOR_START.md"
+    },
+    ".workflow/templates/PROJECT_SETUP_START.md": {
+      "sha256": "2fa0ce47e8b6ab566c3c4694b5d013e05108adc1505ce8b5fbd7b73da2c1147a",
+      "source": "templates/PROJECT_SETUP_START.md"
+    },
+    ".workflow/templates/PRO_FEEDBACK_TEMPLATE.md": {
+      "sha256": "accf2dfcb4c799824576d36cbcd1980f460426722bd62d4ec10bf465c04b2293",
+      "source": "templates/PRO_FEEDBACK_TEMPLATE.md"
+    },
+    ".workflow/templates/PRO_REVIEW_PACKET.md": {
+      "sha256": "13505e7e1c98e3690532678f3ca5117a1784d47eab9b9c18034f27aa683ce48d",
+      "source": "templates/PRO_REVIEW_PACKET.md"
+    },
+    ".workflow/templates/REVIEWER_START.md": {
+      "sha256": "36aeb48fe8f4d5434cce1ac1ea0888daec8a0cc5856627ee8afb4c94c5200b9e",
+      "source": "templates/REVIEWER_START.md"
+    },
+    ".workflow/templates/STEP_RESULT.md": {
+      "sha256": "e0dca0fa1bc695368f66195e43375773b9543973c6ace5afe9aa0c820feff1fd",
+      "source": "templates/STEP_RESULT.md"
+    }
+  },
+  "profile_hashes": {
+    "generic": {
+      "sha256": "cf0c071b23205a6197e71a8ae887a22b82140c309e8186cba51a7394e6f843a7",
+      "source": "profiles/generic.md"
+    },
+    "research": {
+      "sha256": "864dcb73dda07a22975f3435df7e462e93f54eca3c3248fa4b5acb4b165251b2",
+      "source": "profiles/research.md"
+    },
+    "software": {
+      "sha256": "56f850addfd81b0a82cc3c35954dd7b4d56a241a1961a53ab5559d737d70525a",
+      "source": "profiles/software.md"
+    },
+    "writing": {
+      "sha256": "1921a9f6c8fde4379c38f7a1a4e512b7632f11b7690e67cd4aa0eade898f18b4",
+      "source": "profiles/writing.md"
+    }
+  },
+  "toolkit_version": "0.2.0",
+  "workflow_schema": "0.2"
+}

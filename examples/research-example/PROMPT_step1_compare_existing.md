@@ -1,7 +1,7 @@
 # Execution Prompt
 
 ```text
-SCHEMA=review-execute-loop/0.2
+SCHEMA=review-execute-loop/0.3
 PROMPT_ID=RP-001
 STEP_ID=step1
 STEP_KIND=MAIN
@@ -13,6 +13,7 @@ RETURN_TARGET=MANUAL
 ACTIVE_BRIEF_ID=BRIEF-001
 ACTIVE_REFERENCE_PLAN_ID=NONE
 PRO_REVIEW_SOURCE=NONE
+REVIEW_SOURCE=.workflow/review_packets/step0_example/REVIEW_RETURN.md
 DELIVERABLE_TARGET=NONE
 USER_APPROVAL=approved comparison-only scope
 REPAIR_BUDGET=1

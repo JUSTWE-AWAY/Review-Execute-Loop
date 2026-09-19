@@ -2,6 +2,16 @@
 
 All notable changes to Review-Execute Loop are recorded here.
 
+## 0.3.0 - 2026-09-19
+
+- Added protected project-root `incoming/` for immutable user-supplied starting materials.
+- Changed setup to Setup Facilitator and Executor Candidate, with fixed Step 0 before independent review and formal Executor promotion.
+- Added per-step flat Manual/Web review packets, zip generation, review-return import, and transport-provenance log events.
+- Added distinct task ID and deep-link fields for Direct recovery and navigation.
+- Added installation manifests and safe project upgrade check, prepare, conflict, backup, and apply workflows.
+- Added compatibility baselines for v0.1.1 and v0.2.0 projects.
+- Preserved project briefs, plans, logs, prompts, results, review packets, Pro packets, `AGENTS.md`, `incoming/`, `deliverables/`, code, and data during upgrades.
+
 ## 0.2.0 - 2026-09-19
 
 - Added optional model-agnostic Pro decision review and independent cold-review packets.
