@@ -56,7 +56,7 @@ def require_project(project: Path) -> Path:
 
 
 def legacy_version_for_schema(schema: str) -> str:
-    return {"0.1": "0.1.1", "0.2": "0.2.0", "0.3": "0.3.0"}.get(
+    return {"0.1": "0.1.1", "0.2": "0.2.0", "0.3": "0.3.1"}.get(
         schema, "unknown"
     )
 

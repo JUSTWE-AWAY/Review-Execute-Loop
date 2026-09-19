@@ -185,7 +185,7 @@ REVIEW_SOURCE=external-step0-review
                 "import",
                 str(target),
                 "--packet",
-                packet_path.relative_to(target).as_posix(),
+                f".workflow/review_packets/{packet_path.name}",
                 "--review-return",
                 str(review_return),
                 "--prompt",
@@ -221,7 +221,7 @@ REVIEW_SOURCE=external-step0-review
             (target / ".workflow" / "INSTALL_MANIFEST.json").unlink()
             checked = run(str(UPDATE), str(target), "--check")
             self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
-            self.assertIn("FROM_VERSION=0.3.0", checked.stdout)
+            self.assertIn("FROM_VERSION=0.3.1", checked.stdout)
             self.assertIn("SAFE_ADD=0", checked.stdout)
             self.assertIn("SAFE_REPLACE=0", checked.stdout)
             self.assertIn("CONFLICT=0", checked.stdout)
@@ -268,7 +268,7 @@ REVIEW_SOURCE=external-step0-review
             self.assertIn("legacy workflow schema 0.1", validation.stdout)
 
     def test_release_manifests_are_machine_readable(self) -> None:
-        for version in ("0.1.1", "0.2.0", "0.3.0"):
+        for version in ("0.1.1", "0.2.0", "0.3.0", "0.3.1"):
             path = ROOT / "manifests" / "releases" / f"v{version}.json"
             payload = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(payload["toolkit_version"], version)

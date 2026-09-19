@@ -2,6 +2,10 @@
 
 All notable changes to Review-Execute Loop are recorded here.
 
+## 0.3.1 - 2026-09-19
+
+- Fixed the Windows review-packet round-trip smoke test for temporary paths that use short and long aliases.
+
 ## 0.3.0 - 2026-09-19
 
 - Added protected project-root `incoming/` for immutable user-supplied starting materials.

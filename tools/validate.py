@@ -54,6 +54,7 @@ DISTRIBUTION_FILES = (
     "manifests/releases/v0.1.1.json",
     "manifests/releases/v0.2.0.json",
     "manifests/releases/v0.3.0.json",
+    "manifests/releases/v0.3.1.json",
 )
 
 PROJECT_FILES_BASE = (
@@ -239,6 +240,7 @@ def validate_distribution(root: Path) -> tuple[list[str], list[str]]:
         "manifests/releases/v0.1.1.json",
         "manifests/releases/v0.2.0.json",
         "manifests/releases/v0.3.0.json",
+        "manifests/releases/v0.3.1.json",
     ):
         try:
             manifest = json.loads((root / relative).read_text(encoding="utf-8-sig"))
