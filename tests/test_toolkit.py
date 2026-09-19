@@ -50,6 +50,11 @@ class ToolkitSmokeTests(unittest.TestCase):
                     self.assertTrue(
                         (target / ".workflow" / "templates" / "PROJECT_SETUP_START.md").is_file()
                     )
+                    self.assertTrue(
+                        (target / ".workflow" / "templates" / "PRO_REVIEW_PACKET.md").is_file()
+                    )
+                    self.assertTrue((target / ".workflow" / "REFERENCE_PLAN.md").is_file())
+                    self.assertTrue((target / "deliverables" / "README.md").is_file())
                     validation = run(str(VALIDATE), "--project", str(target))
                     self.assertEqual(
                         validation.returncode,
@@ -79,6 +84,41 @@ class ToolkitSmokeTests(unittest.TestCase):
             self.assertNotEqual(second.returncode, 0)
             self.assertIn("Refusing to overwrite", second.stderr)
             self.assertEqual(state.read_bytes(), before)
+
+    def test_existing_deliverables_is_preserved(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            deliverables = target / "deliverables"
+            deliverables.mkdir(parents=True)
+            marker = deliverables / "existing.txt"
+            marker.write_text("keep\n", encoding="utf-8")
+            result = run(str(INIT), str(target), "--mode", "manual")
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertEqual(marker.read_text(encoding="utf-8"), "keep\n")
+            self.assertFalse((deliverables / "README.md").exists())
+
+    def test_legacy_schema_still_validates_with_warning(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            result = run(str(INIT), str(target), "--mode", "manual")
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            workflow = target / ".workflow" / "WORKFLOW.md"
+            workflow.write_text(
+                workflow.read_text(encoding="utf-8").replace(
+                    "review-execute-loop/0.2", "review-execute-loop/0.1", 1
+                ),
+                encoding="utf-8",
+            )
+            (target / ".workflow" / "REFERENCE_PLAN.md").unlink()
+            (target / ".workflow" / "templates" / "PRO_REVIEW_PACKET.md").unlink()
+            (target / ".workflow" / "templates" / "PRO_FEEDBACK_TEMPLATE.md").unlink()
+            validation = run(str(VALIDATE), "--project", str(target))
+            self.assertEqual(
+                validation.returncode,
+                0,
+                validation.stdout + validation.stderr,
+            )
+            self.assertIn("legacy workflow schema 0.1", validation.stdout)
 
 
 if __name__ == "__main__":

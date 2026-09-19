@@ -25,6 +25,7 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
     repo_root = Path(__file__).resolve().parents[1]
     starter = repo_root / "starter" / ".workflow"
     templates_source = repo_root / "templates"
+    deliverables_source = repo_root / "starter" / "deliverables"
     profile_source = repo_root / "profiles" / f"{profile}.md"
     agents_source = repo_root / "starter" / "AGENTS.md.example"
     agents_block = repo_root / "adapters" / "codex" / "AGENTS_BLOCK.md"
@@ -32,6 +33,7 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
     for required in (
         starter,
         templates_source,
+        deliverables_source,
         profile_source,
         agents_source,
         agents_block,
@@ -52,9 +54,13 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
 
     temporary_root = Path(tempfile.mkdtemp(prefix=".review_execute_init_", dir=target))
     staged_workflow = temporary_root / ".workflow"
+    staged_deliverables = temporary_root / "deliverables"
+    deliverables_target = target / "deliverables"
+    deliverables_message = ""
     try:
         shutil.copytree(starter, staged_workflow)
         shutil.copytree(templates_source, staged_workflow / "templates")
+        shutil.copytree(deliverables_source, staged_deliverables)
         shutil.copy2(profile_source, staged_workflow / "PROFILE.md")
 
         state_path = staged_workflow / "WORKFLOW_STATE.md"
@@ -93,6 +99,13 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
         brief_path.write_text(brief, encoding="utf-8")
 
         os.replace(staged_workflow, workflow_target)
+        if deliverables_target.exists():
+            deliverables_message = (
+                f"Existing {deliverables_target} preserved; no files were added to it."
+            )
+        else:
+            os.replace(staged_deliverables, deliverables_target)
+            deliverables_message = f"Created {deliverables_target}."
     finally:
         shutil.rmtree(temporary_root, ignore_errors=True)
 
@@ -113,12 +126,14 @@ def initialize(target: Path, profile: str, mode: str, install_agents: bool) -> N
     print(f"Initialized Review-Execute Loop in: {target}")
     print(f"Mode: {mode.upper()} | Profile: {profile}")
     print(agents_message)
+    print(deliverables_message)
     print("Next:")
     print("1. Give .workflow/templates/PROJECT_SETUP_START.md to the first project window")
     print("2. Complete and approve .workflow/PROJECT_BRIEF.md")
-    print("3. Complete role bindings in .workflow/WORKFLOW_STATE.md")
-    print("4. Give .workflow/templates/EXECUTOR_START.md to the Executor")
-    print("5. Give .workflow/templates/REVIEWER_START.md to the independent Reviewer")
+    print("3. Optionally approve .workflow/REFERENCE_PLAN.md")
+    print("4. Complete role bindings in .workflow/WORKFLOW_STATE.md")
+    print("5. Give .workflow/templates/EXECUTOR_START.md to the Executor")
+    print("6. Give .workflow/templates/REVIEWER_START.md to the independent Reviewer")
 
 
 def main() -> int:

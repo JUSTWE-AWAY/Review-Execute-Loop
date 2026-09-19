@@ -27,6 +27,8 @@ What should not be changed, investigated, or produced?
 
 - Primary deliverable:
 - Supporting deliverables:
+- Final-output root: `deliverables/`
+- Intended numbered folders, if already known:
 
 ## Acceptance Criteria
 
@@ -44,6 +46,15 @@ What should not be changed, investigated, or produced?
 - Known uncertainty:
 - Decision needed before execution:
 
+## Initial Route And Fallbacks
+
+Keep this short. Detailed route exploration may instead use the optional `.workflow/REFERENCE_PLAN.md`.
+
+- Tentative first route:
+- Known decision points:
+- Acceptable fallback directions:
+- Assumptions most likely to change:
+
 ## Change Rule
 
-Implementation details may evolve inside this brief. A material change to the goal, major route, acceptance criteria, or protected boundary requires a new versioned brief and explicit activation approval.
+Implementation details and the preferred route may evolve. Route changes that preserve the goal and boundaries use a new optional reference-plan version. A material change to the final goal, acceptance criteria, or protected boundary requires a new versioned brief and explicit activation approval.

@@ -2,6 +2,16 @@
 
 All notable changes to Review-Execute Loop are recorded here.
 
+## 0.2.0 - 2026-09-19
+
+- Added optional model-agnostic Pro decision review and independent cold-review packets.
+- Added flat Pro packet and feedback templates with user-controlled adoption.
+- Added optional `step0`, structural step IDs, substeps, retries, and forward-recovery rules.
+- Added an optional provisional reference plan with explicit fallbacks and versioned route changes.
+- Added a protected `deliverables/` convention with stable `001_*`, `002_*` ordering and finer artifact subfolders.
+- Preserved existing final-output directories during initialization.
+- Kept legacy schema `0.1` project validation available with a warning.
+
 ## 0.1.1 - 2026-09-19
 
 - Added a dedicated setup prompt for the first project discussion and role transition.

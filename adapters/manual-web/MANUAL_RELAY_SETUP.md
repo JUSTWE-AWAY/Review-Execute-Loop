@@ -19,6 +19,12 @@ The Reviewer should return one complete prompt following `.workflow/templates/EX
 
 Do not ask the user to copy a separate long handoff, status file, and prompt when one complete result or prompt is sufficient.
 
+## Optional Pro Review
+
+Reviewer may prepare a flat `.workflow/pro_reviews/` folder and optional zip after the user approves a major decision review or cold review. The user carries that packet to a temporary deep-review conversation and returns the complete `PRO_FEEDBACK.md`. Local paths alone are not sufficient for a remote reviewer; attach the numbered files or paste their contents.
+
+The normal Reviewer checks returned feedback against current project facts and discusses adoption with the user. A `PRO_DRAFT_PROMPT` is not copied directly to Executor. Only the later user-approved normal execution prompt enters the Manual Relay.
+
 ## Minimal Copy Messages
 
 To the Executor:

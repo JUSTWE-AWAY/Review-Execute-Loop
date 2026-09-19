@@ -1,14 +1,19 @@
 # Execution Prompt
 
 ```text
-SCHEMA=review-execute-loop/0.1
+SCHEMA=review-execute-loop/0.2
 PROMPT_ID=<unique-id>
-STEP_ID=<short-step-id>
+STEP_ID=<step1-or-step2a-or-step2a.1-or-recovery-form>
+STEP_KIND=<INVENTORY-or-MAIN-or-SUBSTEP-or-RETRY-or-RECOVERY>
+PARENT_STEP_ID=<parent-step-id-or-NONE>
 BASELINE_STEP_ID=<reviewed-step-id-or-setup>
 MODE=<DIRECT-or-MANUAL>
 EXECUTOR_TARGET=<verified-task-id-or-MANUAL>
 RETURN_TARGET=<verified-reviewer-id-or-MANUAL>
 ACTIVE_BRIEF_ID=<brief-id>
+ACTIVE_REFERENCE_PLAN_ID=<plan-id-or-NONE>
+PRO_REVIEW_SOURCE=<pro-review-id-and-feedback-path-or-NONE>
+DELIVERABLE_TARGET=<deliverables/NNN_name-or-NONE>
 USER_APPROVAL=<date/time or concise reference>
 REPAIR_BUDGET=<nonnegative integer>
 RESULT_PATH=.workflow/step_records/<step-id>_<timestamp>/STEP_RESULT.md
@@ -33,6 +38,7 @@ These are entry points, not a command to scan unrelated history. Necessary read-
 
 - Paths or files that may be created or modified:
 - New version/output location:
+- Final deliverable promotion target, if approved:
 
 ## Protected And Forbidden
 
@@ -47,6 +53,10 @@ These are entry points, not a command to scan unrelated history. Necessary read-
 3. State what may be repaired automatically within scope.
 
 Do not add unrelated improvements or domain-wide audits.
+
+If `PRO_REVIEW_SOURCE` is present, use only the portions the user approved for adoption. A `PRO_DRAFT_PROMPT` is never direct execution authorization.
+
+If `DELIVERABLE_TARGET` is present, write only to that approved three-digit folder. Keep candidates and temporary outputs outside `deliverables/`; preserve editable sources and final exports when relevant.
 
 ## Acceptance Checks
 

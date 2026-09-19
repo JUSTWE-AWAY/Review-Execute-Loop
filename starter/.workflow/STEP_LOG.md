@@ -17,6 +17,7 @@ TARGET=<task id, MANUAL, or NONE>
 RETURN_TARGET=<task id, MANUAL, or NONE>
 USER_APPROVAL=<reference or NONE>
 SUPERSEDES=<event reference or NONE>
+PRO_REVIEW_ID=<id or NONE>
 ```
 
 ## Setup Events
@@ -24,3 +25,5 @@ SUPERSEDES=<event reference or NONE>
 <!-- Append the first real event below. Do not invent earlier history. -->
 
 In Direct mode, normal events are `EXECUTION_COMPLETED`, `REVIEW_COMPLETED`, and `PROMPT_ISSUED`. In Manual mode, use `EXECUTION_COMPLETED` plus `MANUAL_PROMPT_RECEIVED` when the user delivers an approved remote-review prompt. The latter is a transport/import event written by Executor, not a claim that Executor performed the review.
+
+When Pro review is actually used, append `PRO_REVIEW_REQUESTED`, `PRO_REVIEW_RETURNED`, and `PRO_REVIEW_DECIDED` as the corresponding transitions occur. Do not add empty Pro events to ordinary steps. The decision event records adopt, partial adopt, defer, or reject in `ONE_LINE_RESULT` and cites user approval.

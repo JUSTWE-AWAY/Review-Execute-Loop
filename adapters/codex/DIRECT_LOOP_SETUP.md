@@ -33,3 +33,9 @@ Before dispatch, Reviewer updates the active step/prompt/approval pointers and s
 If the send fails or task addressing is unavailable, record the failed delivery once and use the Manual Relay fallback. Do not resend the same prompt ID automatically.
 
 Creating, replacing, archiving, or closing a task is an external state change and requires user approval.
+
+## Optional Pro Review
+
+When the user approves a deep decision review or cold review, Reviewer creates the flat packet under `.workflow/pro_reviews/`, records the active Pro-review pointers, and may create or select a distinct temporary Pro task only with user approval. Send the packet path and return target once. Pro returns `PRO_FEEDBACK.md` to Reviewer and does not contact Executor with an executable prompt.
+
+After feedback returns, Reviewer discusses adopt, partial adopt, defer, or reject with the user. Only an approved normal `EXECUTION_PROMPT.md` may be dispatched to Executor. Archive or close a temporary Pro task only with user approval.

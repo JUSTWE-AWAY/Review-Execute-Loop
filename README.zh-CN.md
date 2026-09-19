@@ -22,6 +22,7 @@
 - 每个 prompt 和结果都有稳定 ID；
 - 恢复上下文时先读当前任务和最近状态，不扫描全部历史；
 - 支持自动直接发送，也始终保留人工复制回退。
+- 重大决策可以暂停并进入可选的 Pro 深度审查，但不能绕过用户批准。
 
 ## 两种模式
 
@@ -77,17 +78,18 @@ python3 tools/init.py /path/to/project --profile research --mode direct
 
 可选 Profile：`generic`、`research`、`software`、`writing`。可选模式：`direct`、`manual`。
 
-初始化程序不会覆盖已有 `.workflow/` 或 `AGENTS.md`。如果项目已有 `AGENTS.md`，它会保持原文件不变，并把建议加入的 Codex 规则写到 `.workflow/` 中供人工合并。
+初始化程序不会覆盖已有 `.workflow/`、`AGENTS.md` 或 `deliverables/` 目录。如果项目已有 `AGENTS.md`，它会保持原文件不变，并把建议加入的 Codex 规则写到 `.workflow/` 中供人工合并。
 
 ### 方法 B：手动复制
 
 1. 把 `starter/.workflow/` 复制到项目根目录。
-2. 把 `templates/` 复制为 `.workflow/templates/`。
-3. 从 `profiles/` 选择一个文件，复制为 `.workflow/PROFILE.md`。
-4. 使用 Codex 时，把 `starter/AGENTS.md.example` 的相关内容合并到项目根目录 `AGENTS.md`，不要覆盖已有项目规则。
-5. 把 `.workflow/templates/PROJECT_SETUP_START.md` 交给第一个项目窗口。
-6. 初始化获得批准后，把 `.workflow/templates/EXECUTOR_START.md` 交给该窗口。
-7. 把 `.workflow/templates/REVIEWER_START.md` 交给独立审阅窗口。
+2. 只有在项目尚无正式产物目录时，才把 `starter/deliverables/` 复制到项目根目录。
+3. 把 `templates/` 复制为 `.workflow/templates/`。
+4. 从 `profiles/` 选择一个文件，复制为 `.workflow/PROFILE.md`。
+5. 使用 Codex 时，把 `starter/AGENTS.md.example` 的相关内容合并到项目根目录 `AGENTS.md`，不要覆盖已有项目规则。
+6. 把 `.workflow/templates/PROJECT_SETUP_START.md` 交给第一个项目窗口。
+7. 初始化获得批准后，把 `.workflow/templates/EXECUTOR_START.md` 交给该窗口。
+8. 把 `.workflow/templates/REVIEWER_START.md` 交给独立审阅窗口。
 
 Direct 模式在常规派发前需要两个不同且真实的任务 ID。Manual 模式可以把任务 ID 保持为 `NOT_APPLICABLE`。
 
@@ -97,10 +99,11 @@ Direct 模式在常规派发前需要两个不同且真实的任务 ID。Manual 
 2. 和用户确认 `PROJECT_BRIEF.md`。
 3. 第一个窗口成为执行窗口，只完成初始化。
 4. 新建一个独立审阅窗口，或者在 Manual 模式使用 Web 审阅。
-5. 审阅窗口查看最近结果，先和用户讨论下一项范围。
-6. 用户同意后，审阅窗口填写一个 `EXECUTION_PROMPT.md`。
-7. 执行窗口执行任务，生成一个 `STEP_RESULT.md`，追加一条完成事件并停止。
-8. 审阅窗口审查结果；只有再次得到用户确认才推进下一项任务。
+5. 对已有或复杂项目，审阅窗口可以先派发可选的 `step0` 基线盘点；简单项目可以从 `step1` 开始。
+6. 审阅窗口查看最近结果，先和用户讨论下一项范围。
+7. 用户同意后，审阅窗口填写一个 `EXECUTION_PROMPT.md`。
+8. 执行窗口执行任务，生成一个 `STEP_RESULT.md`，追加一条完成事件并停止。
+9. 审阅窗口审查结果；只有再次得到用户确认才推进下一项任务。
 
 ## 项目中长期保留的文件
 
@@ -113,7 +116,39 @@ Direct 模式在常规派发前需要两个不同且真实的任务 ID。Manual 
 | `.workflow/WORKFLOW_STATE.md` | 模式、窗口绑定、当前 prompt 和返回目标 |
 | `.workflow/STEP_LOG.md` | 只增不改的简短步骤日志 |
 
+`.workflow/REFERENCE_PLAN.md` 是可选文件，用来记录暂定路线、决策点、回退方向和假设；它不冻结探索路线，也不授权执行。
+
 每项任务只新增一个完整 prompt、一个结果记录以及真正的任务产物。不强制生成独立 summary、status flags、handoff 包或证据台账。
+
+## 步骤、重试与计划修改
+
+- `step0`：已有或复杂项目的可选基线盘点；
+- `step1`、`step2`：主推进步骤；
+- `step2a`、`step2b`：并列子步骤；
+- `step2a.1`：更深一级子步骤；
+- `step2a.1-r1`：经过审阅的重试或恢复；
+- 结构化编号后可以附一个简短说明后缀。
+
+技术错误可以在 Prompt 批准的修复额度内处理；后续重试使用新的 Prompt 和 ID。新证据只改变优选路线而不改变最终目标和边界时，新建参考计划版本；目标或保护边界变化时，新建 Project Brief 版本。失败结果和旧计划都应保留，不能改写历史。
+
+## 可选 Pro 审查
+
+Pro Review 指一个临时的深度审查角色，使用更多思考时间处理重大决策或独立冷审，不代表特定模型或产品。对于重大路线、架构、方法、结论、发布、高成本投入、证据冲突，或者用户主动要求冷审的情况，Reviewer 可以建议介入。
+
+用户确认后，Reviewer 在 `.workflow/pro_reviews/` 下生成一个小型平铺审查包。Pro 返回 `PRO_FEEDBACK.md`，正常 Reviewer 再和用户讨论采纳、部分采纳、暂缓或拒绝。`PRO_DRAFT_PROMPT` 只是建议，不能直接交给 Executor 执行。
+
+## 最终产物
+
+经过用户确认的论文、发布包、交付物或其他正式产物统一放在 `deliverables/`：
+
+```text
+deliverables/
+├─ 001_<主要产物>/
+├─ 002_<辅助产物>/
+└─ 003_<其他产物>/
+```
+
+候选结果和临时结果留在其他位置。已有编号不重新排序。每个编号目录可以根据任务使用 `source/`、`figures/`、`tables/`、`assets/`、`exports/`、`packages/` 或 `docs/` 等细分目录。
 
 ## 上下文恢复
 

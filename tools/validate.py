@@ -17,12 +17,16 @@ DISTRIBUTION_FILES = (
     "VERSION",
     "starter/.workflow/WORKFLOW.md",
     "starter/.workflow/PROJECT_BRIEF.md",
+    "starter/.workflow/REFERENCE_PLAN.md",
     "starter/.workflow/WORKFLOW_STATE.md",
     "starter/.workflow/STEP_LOG.md",
+    "starter/deliverables/README.md",
     "starter/AGENTS.md.example",
     "templates/REVIEWER_START.md",
     "templates/EXECUTOR_START.md",
     "templates/PROJECT_SETUP_START.md",
+    "templates/PRO_REVIEW_PACKET.md",
+    "templates/PRO_FEEDBACK_TEMPLATE.md",
     "templates/EXECUTION_PROMPT.md",
     "templates/STEP_RESULT.md",
     "profiles/generic.md",
@@ -39,7 +43,7 @@ DISTRIBUTION_FILES = (
     "tools/validate.py",
 )
 
-PROJECT_FILES = (
+PROJECT_FILES_BASE = (
     ".workflow/WORKFLOW.md",
     ".workflow/PROJECT_BRIEF.md",
     ".workflow/WORKFLOW_STATE.md",
@@ -50,6 +54,12 @@ PROJECT_FILES = (
     ".workflow/templates/PROJECT_SETUP_START.md",
     ".workflow/templates/EXECUTION_PROMPT.md",
     ".workflow/templates/STEP_RESULT.md",
+)
+
+PROJECT_FILES_V02 = (
+    ".workflow/REFERENCE_PLAN.md",
+    ".workflow/templates/PRO_REVIEW_PACKET.md",
+    ".workflow/templates/PRO_FEEDBACK_TEMPLATE.md",
 )
 
 PRIVATE_PATH_PATTERNS = (
@@ -113,13 +123,20 @@ def validate_distribution(root: Path) -> tuple[list[str], list[str]]:
         "starter/.workflow/WORKFLOW.md": (
             "### Reviewer / Orchestrator",
             "### Executor",
+            "### Pro Reviewer / Deep Reviewer (Optional)",
             "### DIRECT",
             "### MANUAL",
             "## Reading And Recovery",
             "## File Safety",
+            "## Optional Pro Review",
+            "## Final Deliverables",
         ),
         "templates/EXECUTION_PROMPT.md": (
             "PROMPT_ID=",
+            "STEP_KIND=",
+            "PARENT_STEP_ID=",
+            "PRO_REVIEW_SOURCE=",
+            "DELIVERABLE_TARGET=",
             "RETURN_TARGET=",
             "## Acceptance Checks",
             "## Early Stop",
@@ -133,6 +150,16 @@ def validate_distribution(root: Path) -> tuple[list[str], list[str]]:
             "not yet the independent Reviewer",
             "must not begin substantive project work",
             "SETUP_CONFIRMED",
+        ),
+        "templates/PRO_REVIEW_PACKET.md": (
+            "PRO_REVIEW_ID=",
+            "REVIEW_KIND=",
+            "PRO_DRAFT_PROMPT",
+        ),
+        "templates/PRO_FEEDBACK_TEMPLATE.md": (
+            "PRO_REVIEW_ID=",
+            "## Final Recommendation",
+            "PRO_DRAFT_PROMPT",
         ),
     }
     for relative, tokens in required_tokens.items():
@@ -172,9 +199,27 @@ def validate_distribution(root: Path) -> tuple[list[str], list[str]]:
 def validate_project(root: Path) -> tuple[list[str], list[str]]:
     errors: list[str] = []
     warnings: list[str] = []
-    for relative in PROJECT_FILES:
+    for relative in PROJECT_FILES_BASE:
         if not (root / relative).is_file():
             errors.append(f"missing project workflow file: {relative}")
+    if errors:
+        return errors, warnings
+
+    workflow_text = (root / ".workflow" / "WORKFLOW.md").read_text(
+        encoding="utf-8-sig"
+    )
+    schema_match = re.search(r"review-execute-loop/(0\.[0-9]+)", workflow_text)
+    schema = schema_match.group(1) if schema_match else ""
+    if schema == "0.2":
+        for relative in PROJECT_FILES_V02:
+            if not (root / relative).is_file():
+                errors.append(f"missing v0.2 project workflow file: {relative}")
+        if not (root / "deliverables").is_dir():
+            warnings.append("v0.2 project has no deliverables directory")
+    elif schema == "0.1":
+        warnings.append("project uses legacy workflow schema 0.1")
+    else:
+        errors.append(f"unsupported or missing workflow schema: {schema or 'MISSING'}")
     if errors:
         return errors, warnings
 
@@ -190,6 +235,14 @@ def validate_project(root: Path) -> tuple[list[str], list[str]]:
         "CURRENT_STEP_ID",
         "ACTIVE_PROMPT_ID",
     )
+    if schema == "0.2":
+        required_state += (
+            "ACTIVE_REFERENCE_PLAN_ID",
+            "ACTIVE_REFERENCE_PLAN_PATH",
+            "DELIVERABLES_ROOT",
+            "ACTIVE_PRO_REVIEW_ID",
+            "ACTIVE_PRO_REVIEW_PATH",
+        )
     for key in required_state:
         if not state.get(key):
             errors.append(f"missing state field: {key}")
@@ -201,7 +254,7 @@ def validate_project(root: Path) -> tuple[list[str], list[str]]:
         pending = any("PENDING" in value or not value for value in (executor, reviewer, return_target))
         if pending:
             message = "DIRECT mode role IDs are not fully bound"
-            if phase == "SETUP":
+            if phase in {"SETUP", "WAITING_FOR_REVIEWER_BINDING"}:
                 warnings.append(message + "; complete binding before routine dispatch")
             else:
                 errors.append(message)
@@ -216,11 +269,12 @@ def validate_project(root: Path) -> tuple[list[str], list[str]]:
     if "Status: `DRAFT`" in brief_text or "Last approved by user: `NOT_APPROVED`" in brief_text:
         warnings.append("project brief is still draft/unapproved")
 
-    workflow_text = (root / ".workflow" / "WORKFLOW.md").read_text(
-        encoding="utf-8-sig"
-    )
-    if "review-execute-loop/0.1" not in workflow_text:
-        errors.append("unsupported or missing workflow schema")
+    step_id = state.get("CURRENT_STEP_ID", "")
+    if step_id not in {"setup", "NONE"} and not re.fullmatch(
+        r"step(?:0|[1-9][0-9]*)(?:[a-z])?(?:\.[1-9][0-9]*)?(?:-r[1-9][0-9]*)?(?:-[a-z0-9]+(?:-[a-z0-9]+)*)?",
+        step_id,
+    ):
+        warnings.append(f"CURRENT_STEP_ID does not follow the recommended convention: {step_id}")
     return errors, warnings
 
 
